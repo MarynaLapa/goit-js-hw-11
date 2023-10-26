@@ -4,7 +4,7 @@ import axios from 'axios';
 // import 'simplelightbox/dist/simple-lightbox.min.css';
 
 // const { default: axios } = require("axios");
-const axios = require('axios').default;
+const axios = require('axios');
 
 const elements = {
     form: document.querySelector("#search-form"),
