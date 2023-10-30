@@ -44,7 +44,7 @@ async function handlerSearch(evt) {
    
     console.log(searchValue)
     const data = await getSearchValue(searchValue);
-    
+    console.log(data)
     if (data.hits.length === 0) {
         elements.loadMore.classList.add('visually-hidden');
         Notiflix.Notify.warning('Sorry, there are no images matching your search query. Please try again.');
