@@ -1,0 +1,75 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap');
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
+}
+
+a {
+    text-decoration: none;
+    color: rgb(47, 47, 47);
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    border: 0;
+    padding: 0;
+    white-space: nowrap;
+    clip-path: inset(100%);
+    clip: rect(0 0 0 0);
+    overflow: hidden;
+}
+
+.search-form {
+    margin: 0 auto 60px;
+    text-align: center;
+}
+
+input {
+    width: 200px;
+    padding: 8px;
+    border-radius: 4px;
+}
+
+.gallery {
+    justify-content: center;
+    display: flex;
+    flex-wrap: wrap;
+    row-gap: 20px;
+    column-gap: 40px;
+}
+
+.photo-card-image {
+    width: 300px;
+    height: 200px;
+}
+
+.info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+}
+
+.info-item-text {
+    display: block;
+}
+
+button {
+    text-align: center;
+    color: aliceblue;
+    border-radius: 8px;
+    width: 120px;
+    padding: 8px;
+    background-color: rgb(118, 118, 229);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3),
+        0 0 40px rgba(0, 0, 0, 0.1) inset;
+}
+
+.load-more {
+    display: block;
+    margin: 0 auto;
+}

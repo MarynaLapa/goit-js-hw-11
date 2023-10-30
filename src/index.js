@@ -1,88 +1,138 @@
 import axios from 'axios';
-// import Notiflix from 'notiflix';
-// import SimpleLightbox from "simplelightbox";
-// import 'simplelightbox/dist/simple-lightbox.min.css';
+import Notiflix from 'notiflix';
+import SimpleLightbox from "simplelightbox";
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
-// const { default: axios } = require("axios");
 const axios = require('axios');
 
 const elements = {
-    form: document.querySelector("#search-form"),
-    input: document.querySelector('[name="searchQuery"]')
+    form: document.querySelector('#search-form'),
+    input: document.querySelector('[name="searchQuery"]'),
+    gallery: document.querySelector('.gallery'),
+    loadMore: document.querySelector('.load-more')
 };
+
 const API_KEY = '40272444-68c2b8bdd462bea697b437f9a';
-const URL = 'https://pixabay.com/api/'
+const BASE_URL = 'https://pixabay.com/api/'
+
+const options = {
+    captions: true,
+    captionDelay: 250,
+    captionSelector: 'img',
+    captionType: 'attr',
+    captionPosition: 'bottom',
+    captionsData: 'alt',
+};
+
+let page = 1;
 
 elements.form.addEventListener('submit', handlerSearch);
+elements.loadMore.addEventListener('click', handlerLoadMore)
 
-function handlerSearch(evt) {
+// elements.loadMore.classList.add('visually-hidden');
+let gallerylist = new SimpleLightbox('.gallery a', options);
+
+async function handlerSearch(evt) {
     evt.preventDefault();
-
-    const searchValue = elements.input.value;
+    elements.gallery.innerHTML = '';
+    const formData = new FormData(evt.currentTarget);
+    const searchValue = formData.getAll('searchQuery');
+    if (searchValue[0] === '') {
+        Notiflix.Notify.success('Please enter search parameters first');
+        return; 
+    }
+   
     console.log(searchValue)
-    // const URL = `https://pixabay.com/api/?key=${API_KEY}&q=${searchValue}&image_type=photo&orientation=horizontal&safesearch=true`
-     axios({
-        method: 'GET',
-         url: 'https://pixabay.com/api/',
-        data: {
-    //     webformatURL - посилання на маленьке зображення для списку карток.
-    //     largeImageURL - посилання на велике зображення.
-    //     tags - рядок з описом зображення. Підійде для атрибуту alt.
-    //     likes - кількість лайків.
-    //     views - кількість переглядів.
-    //     comments - кількість коментарів.
-    //     downloads - кількість завантажень.
-        }
-     });
+    const data = await getSearchValue(searchValue);
     
-    axios.get(`${URL}?key=${API_KEY}&q=${searchValue}`, {
-            // 'key': 'API_KEY',
-            // 'q': 'searchValue',
-            'image_type': 'photo',
-            'orientation': 'horizontal',
-            'safesearch': 'true'
-         },)
-        .then(response => {
-            console.log(response)
-        })
-        .catch(error => {
-            console.log(error)
-        })
+    if (data.hits.length === 0) {
+        elements.loadMore.classList.add('visually-hidden');
+        Notiflix.Notify.warning('Sorry, there are no images matching your search query. Please try again.');
+        return;
+    } else {
+        Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
+    }
+    
+    const galleryValue = await getGalleryValue(data.hits);
+    const markupGallery = await createMarkup(galleryValue);
 
+    elements.loadMore.classList.remove('visually-hidden');
 
-//     axios({
-//         method: 'POST',
-//         url: 'https://pixabay.com/api/',
-//         data: {
-//             'key': 'API_KEY',
-//             'q': 'searchValue',
-//             'image_type': 'photo',
-//             'orientation': 'horizontal',
-//             'safesearch': 'true'
-//         }
-//     });
-
-//     const getSearchValue = async (searchValue) => {
-//   try {
-//       const response = await axios.get(${URL});
-//       console.log(response.data)
-//       return response.data;
-//   } catch (err) {
-//       console.error(err.toJSON());
-//   }
-// }
-//     getSearchValue()
-//         .then(data => console.log(data))
-//         .catch(error => console.log(error))
 }
 
-// async function getSearchValue() {
-//     const URL = 'https://pixabay.com/api/'
-//     const resp = await fetch(${URL}image)
-//     console.log(resp)
-// }
+async function getSearchValue(q) {
+    try {
+        const response = await axios({
+            method: 'GET',
+            url: `${BASE_URL}?key=${API_KEY}&q=${q}`,
+            params: {
+                image_type: 'photo',
+                orientation: 'horizontal',
+                safesearch: true,
+                per_page: 40,
+                page
+            },
+            headers: {
+                "Content-type": 'image/jpeg'
+            }
+        }); 
+        console.log(response.data)
+        return response.data;
 
-// getSearchValue() 
+    } catch (err) {
+        console.error(err.toJSON());
+    }
 
+}
 
-// https://pixabay.com/api?key=22879693-f597847bea9bb847dbdd65681&q=searchValue&image_type=photo&orientation=horizontal&safesearch=true
+function getGalleryValue(arr) {
+
+    return arr.map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => {
+        return { webformatURL, largeImageURL, tags, likes, views, comments, downloads };
+    })
+
+}
+
+function createMarkup(arr) {
+    
+    const markup = arr.map(( { webformatURL, largeImageURL, tags, likes, views, comments, downloads } ) => `  
+        <div class="photo-card">
+            <a class="photo-card__link" href="${largeImageURL}">
+                <img src="${webformatURL}" alt="${tags}" class="photo-card-image" width="300" loading="lazy">
+                <div class="info">
+                    <p class="info-item">
+                        <b>Likes:</b> <span class="info-item-text">${likes}</span>
+                    </p>
+                    <p class="info-item">
+                        <b>Views:</b> <span class="info-item-text">${views}</span>
+                    </p>
+                    <p class="info-item">
+                        <b>Comments:</b> <span class="info-item-text">${comments}</span>
+                    </p>
+                    <p class="info-item">
+                        <b>Downloads:</b> <span class="info-item-text">${downloads}</span>
+                    </p>
+                </div>
+            </a>
+        </div>
+    `)
+        .join('')
+    
+    elements.gallery.insertAdjacentHTML('beforeend', markup);
+    gallerylist.refresh();
+
+}
+
+async function handlerLoadMore(evt) {
+    page += 1;
+    const searchValue = elements.input.value;
+
+    const data = await getSearchValue(searchValue);
+    const galleryValue = await getGalleryValue(data.hits);
+    const markupGallery = await createMarkup(galleryValue);
+    
+    // if (data.hits.length < 40) {
+    //     elements.loadMore.classList.add('visually-hidden');
+    //     Notiflix.Notify.success("We're sorry, but you've reached the end of search results.");
+    // };
+}
