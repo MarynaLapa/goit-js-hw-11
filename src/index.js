@@ -35,15 +35,17 @@ let gallerylist = new SimpleLightbox('.gallery a', options);
 async function handlerSearch(evt) {
     evt.preventDefault();
     elements.gallery.innerHTML = '';
-    const formData = new FormData(evt.currentTarget);
-    const searchValue = formData.getAll('searchQuery');
-    if (searchValue[0] === '') {
+    // const formData = new FormData(evt.currentTarget);
+    // const searchValue = formData.getAll('searchQuery');
+    const searchValue = elements.input.value;
+
+    if (searchValue === '') {
         Notiflix.Notify.success('Please enter search parameters first');
         return; 
     }
    
     console.log(searchValue)
-    const data = await getSearchValue(searchValue[0]);
+    const data = await getSearchValue(searchValue);
     console.log(data)
     if (data.hits.length === 0) {
         elements.loadMore.classList.add('visually-hidden');
