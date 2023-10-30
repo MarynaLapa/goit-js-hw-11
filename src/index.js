@@ -43,7 +43,7 @@ async function handlerSearch(evt) {
     }
    
     console.log(searchValue)
-    const data = await getSearchValue(searchValue);
+    const data = await getSearchValue(searchValue[0]);
     console.log(data)
     if (data.hits.length === 0) {
         elements.loadMore.classList.add('visually-hidden');
