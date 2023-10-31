@@ -25,28 +25,25 @@ const options = {
 };
 
 let page = 1;
+const perPage = 40;
 
 elements.form.addEventListener('submit', handlerSearch);
 elements.loadMore.addEventListener('click', handlerLoadMore)
 
-// elements.loadMore.classList.add('visually-hidden');
 let gallerylist = new SimpleLightbox('.gallery a', options);
 
 async function handlerSearch(evt) {
     evt.preventDefault();
     elements.gallery.innerHTML = '';
-    // const formData = new FormData(evt.currentTarget);
-    // const searchValue = formData.getAll('searchQuery');
-    const searchValue = elements.input.value;
-
-    if (searchValue === '') {
+    const formData = new FormData(evt.currentTarget);
+    const searchValue = formData.getAll('searchQuery');
+    if (searchValue[0] === '') {
         Notiflix.Notify.success('Please enter search parameters first');
         return; 
     }
-   
-    console.log(searchValue)
+
     const data = await getSearchValue(searchValue);
-    console.log(data)
+    
     if (data.hits.length === 0) {
         elements.loadMore.classList.add('visually-hidden');
         Notiflix.Notify.warning('Sorry, there are no images matching your search query. Please try again.');
@@ -56,10 +53,9 @@ async function handlerSearch(evt) {
     }
     
     const galleryValue = await getGalleryValue(data.hits);
-    const markupGallery = await createMarkup(galleryValue);
+    createMarkup(galleryValue);
 
     elements.loadMore.classList.remove('visually-hidden');
-
 }
 
 async function getSearchValue(q) {
@@ -71,18 +67,15 @@ async function getSearchValue(q) {
                 image_type: 'photo',
                 orientation: 'horizontal',
                 safesearch: true,
-                per_page: 40,
+                per_page: perPage,
                 page
             },
-            headers: {
-                "Content-type": 'image/jpeg'
-            }
         }); 
-        console.log(response.data)
+
         return response.data;
 
     } catch (err) {
-        console.error(err.toJSON());
+        console.error(err.message);
     }
 
 }
@@ -104,7 +97,7 @@ function createMarkup(arr) {
                 <div class="info">
                     <p class="info-item">
                         <b>Likes:</b> <span class="info-item-text">${likes}</span>
-                    </p>
+                    </p
                     <p class="info-item">
                         <b>Views:</b> <span class="info-item-text">${views}</span>
                     </p>
@@ -122,19 +115,29 @@ function createMarkup(arr) {
     
     elements.gallery.insertAdjacentHTML('beforeend', markup);
     gallerylist.refresh();
-
 }
 
 async function handlerLoadMore(evt) {
     page += 1;
     const searchValue = elements.input.value;
-
     const data = await getSearchValue(searchValue);
     const galleryValue = await getGalleryValue(data.hits);
-    const markupGallery = await createMarkup(galleryValue);
-    
-    // if (data.hits.length < 40) {
-    //     elements.loadMore.classList.add('visually-hidden');
-    //     Notiflix.Notify.success("We're sorry, but you've reached the end of search results.");
-    // };
+    createMarkup(galleryValue);
+   
+    if (page * 40 >= data.totalHits) {
+        Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
+        elements.loadMore.classList.add('visually-hidden');
+        return;
+    }
+
+    const { height: cardHeight } = document
+    .querySelector('.gallery')
+    .lastElementChild.getBoundingClientRect();
+
+    window.scrollBy({
+        top: cardHeight * 2,
+        behavior: 'smooth',
+    });
+
 }
+
