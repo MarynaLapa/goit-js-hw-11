@@ -40,7 +40,15 @@ async function handlerSearch(evt) {
         return; 
     }
 
-    const data = await getSearchValue(searchValue);
+    const data = await getSearchValue(searchValue)
+        .then(function (response) {
+            console.log(response);
+            return response.data;
+        })
+        .catch(function (error) {
+            console.log(error);
+        })
+    console.log(data)
     
     if (data.hits.length === 0) {
         elements.loadMore.classList.add('visually-hidden');
@@ -71,14 +79,7 @@ async function getSearchValue(q) {
 
     const params = new URLSearchParams(paramsObj);
 
-    try {
-        const response = await axios.get(`${BASE_URL}?${params}`); 
-        console.log(response)
-        return response.data;
-
-    } catch (err) {
-        console.log(err);
-    }
+    return await axios.get(`${BASE_URL}?${params}`)
 
 }
 
