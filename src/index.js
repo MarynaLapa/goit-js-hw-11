@@ -42,14 +42,13 @@ async function handlerSearch(evt) {
 
     const data = await getSearchValue(searchValue)
         .then(function (response) {
-            console.log(response);
+
             return response.data;
         })
         .catch(function (error) {
             console.log(error);
         })
-    console.log(data)
-    
+
     if (data.hits.length === 0) {
         elements.loadMore.classList.add('visually-hidden');
         Notiflix.Notify.warning('Sorry, there are no images matching your search query. Please try again.');
@@ -63,8 +62,6 @@ async function handlerSearch(evt) {
 
     elements.loadMore.classList.remove('visually-hidden');
 }
-
-
 
 async function getSearchValue(q) {
     const paramsObj = {
@@ -80,7 +77,6 @@ async function getSearchValue(q) {
     const params = new URLSearchParams(paramsObj);
 
     return await axios.get(`${BASE_URL}?${params}`)
-
 }
 
 function getGalleryValue(arr) {
@@ -100,7 +96,7 @@ function createMarkup(arr) {
                 <div class="info">
                     <p class="info-item">
                         <b>Likes:</b> <span class="info-item-text">${likes}</span>
-                    </p
+                    </p>
                     <p class="info-item">
                         <b>Views:</b> <span class="info-item-text">${views}</span>
                     </p>
@@ -123,7 +119,15 @@ function createMarkup(arr) {
 async function handlerLoadMore(evt) {
     page += 1;
     const searchValue = elements.input.value;
-    const data = await getSearchValue(searchValue);
+    const data = await getSearchValue(searchValue)
+        .then(function (response) {
+
+            return response.data;
+        })
+        .catch(function (error) {
+            console.log(error);
+        })
+
     const galleryValue = await getGalleryValue(data.hits);
     createMarkup(galleryValue);
    
