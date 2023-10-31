@@ -32,7 +32,10 @@ let gallerylist = new SimpleLightbox('.gallery a', options);
 
 async function handlerSearch(evt) {
     evt.preventDefault();
+
     elements.gallery.innerHTML = '';
+    elements.loadMore.classList.add('visually-hidden');
+
     const formData = new FormData(evt.currentTarget);
     const searchValue = formData.getAll('searchQuery');
     if (searchValue[0] === '') {
@@ -42,10 +45,10 @@ async function handlerSearch(evt) {
 
     const data = await getSearchValue(searchValue)
         .then(function (response) {
-
             return response.data;
         })
         .catch(function (error) {
+            elements.loadMore.classList.add('visually-hidden');
             console.log(error);
         })
 
@@ -56,8 +59,6 @@ async function handlerSearch(evt) {
     } else {
         Notiflix.Notify.success(`Hooray! We found ${data.total} images.`);
     }
-
-    // elements.loadMore.classList.remove('visually-hidden');
 
     if (data.hits.length === 40) {
         elements.loadMore.classList.remove('visually-hidden');
@@ -129,6 +130,7 @@ async function handlerLoadMore(evt) {
             return response.data;
         })
         .catch(function (error) {
+            elements.loadMore.classList.add('visually-hidden');
             console.log(error);
         })
 
