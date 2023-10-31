@@ -2,7 +2,7 @@ import axios from 'axios';
 import Notiflix from 'notiflix';
 import SimpleLightbox from "simplelightbox";
 import 'simplelightbox/dist/simple-lightbox.min.css';
-
+import './js/skroll.js';
 const elements = {
     form: document.querySelector('#search-form'),
     input: document.querySelector('[name="searchQuery"]'),
@@ -57,7 +57,9 @@ async function handlerSearch(evt) {
         Notiflix.Notify.success(`Hooray! We found ${data.total} images.`);
     }
 
-    if (data.hits.length > 40) {
+    // elements.loadMore.classList.remove('visually-hidden');
+
+    if (data.hits.length === 40) {
         elements.loadMore.classList.remove('visually-hidden');
     }
 

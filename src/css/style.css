@@ -86,3 +86,29 @@ button {
     display: block;
     margin: 0 auto;
 }
+
+.icon-arrow-up {
+    fill: white;
+}
+
+.back-to-top-btn {
+    background-color: rgb(118, 118, 229, 0.4);
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.back-to-top {
+    position: fixed;
+    display: none;
+    right: 50px;
+    bottom: 50px;
+}
+
+.back-to-top--show {
+    display: block;
+}
