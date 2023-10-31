@@ -3,8 +3,6 @@ import Notiflix from 'notiflix';
 import SimpleLightbox from "simplelightbox";
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
-const axios = require('axios');
-
 const elements = {
     form: document.querySelector('#search-form'),
     input: document.querySelector('[name="searchQuery"]'),
@@ -61,19 +59,21 @@ async function handlerSearch(evt) {
 
 
 async function getSearchValue(q) {
-    try {
-        const response = await axios({
-            method: 'GET',
-            url: `${BASE_URL}?key=${API_KEY}&q=${q}`,
-            params: {
-                image_type: 'photo',
-                orientation: 'horizontal',
-                safesearch: true,
-                per_page: perPage,
-                page
-            },
-        }); 
+    const paramsObj = {
+        key: API_KEY,
+        q,
+        image_type: 'photo',
+        orientation: 'horizontal',
+        safesearch: true,
+        per_page: perPage,
+        page
+    }
 
+    const params = new URLSearchParams(paramsObj);
+
+    try {
+        const response = await axios.get(`${BASE_URL}?${params}`); 
+        console.log(response)
         return response.data;
 
     } catch (err) {
