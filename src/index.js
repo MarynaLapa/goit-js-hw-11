@@ -54,13 +54,15 @@ async function handlerSearch(evt) {
         Notiflix.Notify.warning('Sorry, there are no images matching your search query. Please try again.');
         return;
     } else {
-        Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
+        Notiflix.Notify.success(`Hooray! We found ${data.total} images.`);
     }
-    
+
+    if (data.hits.length > 40) {
+        elements.loadMore.classList.remove('visually-hidden');
+    }
+
     const galleryValue = await getGalleryValue(data.hits);
     createMarkup(galleryValue);
-
-    elements.loadMore.classList.remove('visually-hidden');
 }
 
 async function getSearchValue(q) {
