@@ -58,6 +58,8 @@ async function handlerSearch(evt) {
     elements.loadMore.classList.remove('visually-hidden');
 }
 
+
+
 async function getSearchValue(q) {
     try {
         const response = await axios({
@@ -75,7 +77,7 @@ async function getSearchValue(q) {
         return response.data;
 
     } catch (err) {
-        console.error(err.message);
+        console.error(err);
     }
 
 }
